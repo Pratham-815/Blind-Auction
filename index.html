@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blind Auction</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px gray;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+        }
+        #bidsList {
+            text-align: left;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        function BlindAuction() {
+            const [bids, setBids] = React.useState({});
+            const [name, setName] = React.useState("");
+            const [bid, setBid] = React.useState("");
+            const [winner, setWinner] = React.useState("");
+            
+            const placeBid = () => {
+                if (name && bid) {
+                    setBids(prevBids => ({ ...prevBids, [name]: parseInt(bid) }));
+                    setName("");
+                    setBid("");
+                }
+            };
+            
+            const declareWinner = () => {
+                let highestBid = 0;
+                let winnerName = "";
+                for (let bidder in bids) {
+                    if (bids[bidder] > highestBid) {
+                        highestBid = bids[bidder];
+                        winnerName = bidder;
+                    }
+                }
+                setWinner(`The winner is ${winnerName} with $${highestBid}!`);
+            };
+            
+            return (
+                <div className="container">
+                    <h1>Blind Auction</h1>
+                    <label>Bidder Name:</label>
+                    <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Enter your name" />
+                    <label>Bid Amount:</label>
+                    <input type="number" value={bid} onChange={e => setBid(e.target.value)} placeholder="Enter bid amount" />
+                    <button onClick={placeBid}>Place Bid</button>
+                    <button onClick={declareWinner}>Declare Winner</button>
+                    <div id="bidsList">
+                        {Object.entries(bids).map(([bidder, amount]) => (
+                            <p key={bidder}>{bidder}: ${amount}</p>
+                        ))}
+                    </div>
+                    <h2>{winner}</h2>
+                </div>
+            );
+        }
+        
+        ReactDOM.render(<BlindAuction />, document.getElementById("root"));
+    </script>
+</body>
+</html>
